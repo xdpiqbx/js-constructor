@@ -1,0 +1,24 @@
+{
+  "name": "js-constructor",
+  "version": "1.0.0",
+  "description": "js",
+  "main": "index.js",
+  "scripts": {
+    "serve": "parcel ./src/index.html -p 4200 --open",
+    "build":"parcel build ./src/index.html --no-source-maps"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xdpiqbx/js-constructor.git"
+  },
+  "keywords": [],
+  "author": "xdpiqbx",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/xdpiqbx/js-constructor/issues"
+  },
+  "homepage": "https://github.com/xdpiqbx/js-constructor#readme",
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4"
+  }
+}

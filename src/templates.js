@@ -23,8 +23,16 @@ function text(block){
 }
 
 function columns(block){
-    const html = block.value.map(item => `<div class="col-sm"><p>${item}</p></div>`)
-    return row(`${html.join("")}`)
+    // более полная запись
+    // const html = block.value.map(item => col(item))
+    // return row(html.join(""))
+    
+    //то же самое только короче
+    const html = block.value.map(col).join("")
+    return row(html)
+    
+
+
 //    return `<div class="row">${html.join("")}</div>`
 }
 
