@@ -1,16 +1,12 @@
 import './styles/main.css'
 import { model } from './model'
-import { templates } from './templates'
+import { Site } from './classes/site'
+import { Sidebar } from './classes/sidebar'
 
-console.log(templates.title({value: 'title'}))
+const site = new Site ('#site')
 
-const $site = document.querySelector('#site')
+site.render(model)
 
-model.forEach((block)=>{
-    const toHtml = templates[block.type]
-    if (toHtml){
-        $site.insertAdjacentHTML("beforeend", toHtml(block))
-    }
-})
+const sidebar = new Sidebar('#panel')
 
-// 0:53:50 parcel
+// 1:33:04 panel
