@@ -1,12 +1,7 @@
 import './styles/main.css'
 import { model } from './model'
-import { Site } from './classes/site'
-import { Sidebar } from './classes/sidebar'
+import { App } from './classes/app'
 
-const site = new Site ('#site')
+new App(model).init()
 
-site.render(model)
-
-const sidebar = new Sidebar('#panel')
-
-// 1:33:04 panel
+// 1:38:00 panel

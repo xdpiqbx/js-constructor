@@ -200,6 +200,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.row = row;
 exports.col = col;
 exports.css = css;
+exports.block = block;
 
 function row(content) {
   var styles = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
@@ -213,11 +214,19 @@ function col(content) {
 function css() {
   var styles = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
+  if (typeof styles === 'string') {
+    return styles;
+  }
+
   var toString = function toString(key) {
     return "".concat(key, ": ").concat(styles[key]);
   };
 
   return Object.keys(styles).map(toString).join("; ");
+}
+
+function block(type) {
+  return "\n        <form name=\"".concat(type, "\">\n            <h5>").concat(type, "</h5>\n            <div class=\"form-group\">\n                <input class=\"form-control form-control-sm\" name=\"value\" placeholder=\"value\">\n            </div>\n            <div class=\"form-group\">\n                <input class=\"form-control form-control-sm\" name=\"styles\" placeholder=\"styles\">\n            </div>\n            <button class=\"btn btn-primary btn-sm\">\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C</button>\n        </form>\n        <hr/>\n    ");
 }
 },{}],"classes/blocks.js":[function(require,module,exports) {
 "use strict";
@@ -390,7 +399,7 @@ var model = [new _blocks.TitleBlock("Конструктор сайтов на JS
   tag: "h2",
   styles: {
     background: "linear-gradient(to right, #ff0099, #493240)",
-    color: "#ffffff",
+    color: "orange",
     "text-align": "center",
     padding: "1.5rem"
   }
@@ -420,7 +429,66 @@ var model = [new _blocks.TitleBlock("Конструктор сайтов на JS
   }
 })];
 exports.model = model;
-},{"./assets/img.png":"assets/img.png","./classes/blocks":"classes/blocks.js"}],"classes/site.js":[function(require,module,exports) {
+},{"./assets/img.png":"assets/img.png","./classes/blocks":"classes/blocks.js"}],"classes/sidebar.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Sidebar = void 0;
+
+var _utils = require("../utils");
+
+var _blocks = require("./blocks");
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Sidebar = /*#__PURE__*/function () {
+  function Sidebar(selector, updateCallback) {
+    _classCallCheck(this, Sidebar);
+
+    this.$el = document.querySelector(selector);
+    this.udate = updateCallback;
+    this.init();
+  }
+
+  _createClass(Sidebar, [{
+    key: "init",
+    value: function init() {
+      this.$el.insertAdjacentHTML('afterbegin', this.template);
+      this.$el.addEventListener("submit", this.add.bind(this));
+    }
+  }, {
+    key: "add",
+    value: function add(event) {
+      event.preventDefault();
+      var type = event.target.name;
+      var value = event.target.value.value;
+      var styles = event.target.styles.value;
+      var newBlock = type === 'text' ? new _blocks.TextBlock(value, {
+        styles: styles
+      }) : new _blocks.TitleBlock(value, {
+        styles: styles
+      });
+      this.udate(newBlock);
+      event.target.reset();
+    }
+  }, {
+    key: "template",
+    get: function get() {
+      return [(0, _utils.block)("text"), (0, _utils.block)("title")].join("");
+    }
+  }]);
+
+  return Sidebar;
+}();
+
+exports.Sidebar = Sidebar;
+},{"../utils":"utils.js","./blocks":"classes/blocks.js"}],"classes/site.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -446,6 +514,7 @@ var Site = /*#__PURE__*/function () {
     value: function render(model) {
       var _this = this;
 
+      this.$el.innerHTML = '';
       model.forEach(function (block) {
         var toHtml = block;
 
@@ -460,39 +529,64 @@ var Site = /*#__PURE__*/function () {
 }();
 
 exports.Site = Site;
-},{}],"classes/sidebar.js":[function(require,module,exports) {
+},{}],"classes/app.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Sidebar = void 0;
+exports.App = void 0;
+
+var _sidebar = require("./sidebar");
+
+var _site = require("./site");
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Sidebar = function Sidebar(selector) {
-  _classCallCheck(this, Sidebar);
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-  this.$el = document.querySelector(selector);
-  this.$el.insertAdjacentHTML('afterbegin', '<h1>Hello</h1>');
-};
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-exports.Sidebar = Sidebar;
-},{}],"index.js":[function(require,module,exports) {
+var App = /*#__PURE__*/function () {
+  function App(model) {
+    _classCallCheck(this, App);
+
+    this.model = model;
+  }
+
+  _createClass(App, [{
+    key: "init",
+    value: function init() {
+      var _this = this;
+
+      var site = new _site.Site('#site');
+      site.render(this.model);
+
+      var updateCallback = function updateCallback(newBlock) {
+        _this.model.push(newBlock);
+
+        site.render(_this.model);
+      };
+
+      new _sidebar.Sidebar('#panel', updateCallback);
+    }
+  }]);
+
+  return App;
+}();
+
+exports.App = App;
+},{"./sidebar":"classes/sidebar.js","./site":"classes/site.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
 require("./styles/main.css");
 
 var _model = require("./model");
 
-var _site = require("./classes/site");
+var _app = require("./classes/app");
 
-var _sidebar = require("./classes/sidebar");
-
-var site = new _site.Site('#site');
-site.render(_model.model);
-var sidebar = new _sidebar.Sidebar('#panel'); // 1:33:04 panel
-},{"./styles/main.css":"styles/main.css","./model":"model.js","./classes/site":"classes/site.js","./classes/sidebar":"classes/sidebar.js"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+new _app.App(_model.model).init(); // 1:38:00 panel
+},{"./styles/main.css":"styles/main.css","./model":"model.js","./classes/app":"classes/app.js"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -520,7 +614,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "33245" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "41455" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

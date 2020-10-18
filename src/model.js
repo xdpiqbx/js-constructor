@@ -8,7 +8,7 @@ export const model = [
         tag: "h2",
         styles: {
             background: "linear-gradient(to right, #ff0099, #493240)",
-            color: "#ffffff",
+            color: "orange",
             "text-align": "center",
             padding: "1.5rem"
         },
